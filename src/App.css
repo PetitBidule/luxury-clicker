@@ -19,6 +19,145 @@ body {
   flex-direction: column;
 }
 
+/* Container d'authentification */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.auth-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 3rem;
+  border-radius: 25px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 500px;
+  width: 100%;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.auth-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Formulaires d'authentification */
+.auth-form h2 {
+  color: #333;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input:disabled {
+  background: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background: #fee;
+  color: #c53030;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  border: 1px solid #fed7d7;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.auth-button.primary {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+}
+
+.auth-button.primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.auth-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.auth-switch p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #667eea;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.link-button:hover {
+  color: #5a67d8;
+}
+
 /* Header du jeu */
 .game-header {
   background: rgba(255, 255, 255, 0.98);
@@ -106,6 +245,26 @@ body {
 
 .reset-button {
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: #666;
+  font-size: 1.1rem;
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.user-welcome {
+  color: #667eea;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.reset-button, .logout-button {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a52);
   color: white;
   border: none;
   padding: 0.875rem 1.75rem;
@@ -125,6 +284,19 @@ body {
 
 .reset-button:active {
   transform: translateY(0);
+=======
+.logout-button {
+  background: linear-gradient(45deg, #9b59b6, #8e44ad);
+  box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+}
+
+.reset-button:hover, .logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.logout-button:hover {
+  box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
 }
 
 /* Container principal du jeu */
@@ -461,6 +633,11 @@ body {
     gap: 0.75rem;
   }
   
+  .header-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
   .game-title {
     font-size: 2.25rem;
   }
@@ -492,6 +669,13 @@ body {
   .money-display {
     min-width: 280px;
     padding: 2rem;
+  .auth-content {
+    padding: 2rem;
+    margin: 1rem;
+  }
+  
+  .auth-title {
+    font-size: 2.5rem;
   }
 }
 
@@ -529,5 +713,11 @@ body {
   .money-display {
     min-width: 260px;
     padding: 1.5rem;
+  .auth-content {
+    padding: 1.5rem;
+  }
+  
+  .auth-title {
+    font-size: 2rem;
   }
 }

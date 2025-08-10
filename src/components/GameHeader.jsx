@@ -4,6 +4,7 @@ import { useAudio } from './AudioManager'
 const GameHeader = ({ onReset }) => {
   const { isAudioEnabled, toggleAudio } = useAudio()
 
+
   return (
     <header className="game-header">
       <div className="header-content">
@@ -23,6 +24,7 @@ const GameHeader = ({ onReset }) => {
         </button>
         <button className="reset-button" onClick={onReset}>
           🔄 Reset Game
+
         </button>
       </div>
     </header>

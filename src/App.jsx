@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import AuthContainer from './components/AuthContainer'
 import GameHeader from './components/GameHeader'
 import MoneyDisplay from './components/MoneyDisplay'
 import ClickButton from './components/ClickButton'
@@ -7,7 +8,13 @@ import UpgradesPanel from './components/UpgradesPanel'
 import StatsPanel from './components/StatsPanel'
 import AudioManager, { useAudio } from './components/AudioManager'
 
+
 function AppContent() {
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
+
   const [money, setMoney] = useState(0)
   const [moneyPerClick, setMoneyPerClick] = useState(1)
   const [moneyPerSecond, setMoneyPerSecond] = useState(0)
@@ -24,37 +31,124 @@ function AppContent() {
     playTime: 0
   })
 
+
   const { playCashSound } = useAudio()
 
-  // Sauvegarde automatique
   useEffect(() => {
-    const savedGame = localStorage.getItem('luxuryClickerSave')
-    if (savedGame) {
-      const gameData = JSON.parse(savedGame)
-      setMoney(gameData.money || 0)
-      setMoneyPerClick(gameData.moneyPerClick || 1)
-      setMoneyPerSecond(gameData.moneyPerSecond || 0)
-      setUpgrades(gameData.upgrades || upgrades)
-      setStats(gameData.stats || stats)
+    const savedToken = localStorage.getItem('token')
+    const savedUser = localStorage.getItem('user')
+    
+    if (savedToken && savedUser) {
+      // Vérifier la validité du token
+      verifyToken(savedToken, JSON.parse(savedUser))
     }
   }, [])
 
-  useEffect(() => {
-    const saveGame = () => {
+  // Vérifier la validité du token
+  const verifyToken = async (token, userData) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/verify', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setToken(token)
+        setUser(userData)
+        setIsAuthenticated(true)
+        // Charger la sauvegarde du jeu
+        loadGameSave(token)
+      } else {
+        // Token invalide, déconnecter
+        logout()
+      }
+    } catch (error) {
+      console.error('Erreur de vérification du token:', error)
+      logout()
+    }
+  }
+
+  // Charger la sauvegarde du jeu
+  const loadGameSave = async (userToken) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/game/save', {
+        headers: {
+          'Authorization': `Bearer ${userToken}`
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          const save = data.save
+          setMoney(save.money)
+          setMoneyPerClick(save.moneyPerClick)
+          setMoneyPerSecond(save.moneyPerSecond)
+          setUpgrades(save.upgrades)
+          setStats(save.stats)
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de la sauvegarde:', error)
+    }
+  }
+
+  // Sauvegarder le jeu
+  const saveGame = async () => {
+    if (!token) return
+
+    try {
       const gameData = {
         money,
         moneyPerClick,
         moneyPerSecond,
         upgrades,
-        stats,
-        timestamp: Date.now()
+        stats
       }
-      localStorage.setItem('luxuryClickerSave', JSON.stringify(gameData))
-    }
 
-    const interval = setInterval(saveGame, 5000) // Sauvegarde toutes les 5 secondes
+      await fetch('http://localhost:5000/api/game/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(gameData)
+      })
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error)
+    }
+  }
+
+  // Gérer l'authentification réussie
+  const handleAuthSuccess = (userData, userToken) => {
+    setUser(userData)
+    setToken(userToken)
+    setIsAuthenticated(true)
+    // Charger la sauvegarde du jeu
+    loadGameSave(userToken)
+  }
+
+  // Déconnexion
+  const logout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setToken(null)
+    setUser(null)
+    setIsAuthenticated(false)
+    // Réinitialiser le jeu
+    resetGame()
+  }
+
+  // Sauvegarde automatique
+  useEffect(() => {
+    if (!isAuthenticated) return
+
+    const interval = setInterval(saveGame, 10000) // Sauvegarde toutes les 10 secondes
     return () => clearInterval(interval)
-  }, [money, moneyPerClick, moneyPerSecond, upgrades, stats])
+  }, [money, moneyPerClick, moneyPerSecond, upgrades, stats, isAuthenticated])
 
   // Mise à jour automatique de l'argent par seconde
   useEffect(() => {
@@ -126,13 +220,18 @@ function AppContent() {
         totalMoney: 0,
         playTime: 0
       })
-      localStorage.removeItem('luxuryClickerSave')
     }
   }
 
+  // Afficher l'écran d'authentification si non connecté
+  if (!isAuthenticated) {
+    return <AuthContainer onAuthSuccess={handleAuthSuccess} />
+  }
+
+  // Afficher le jeu si connecté
   return (
     <div className="App">
-      <GameHeader onReset={resetGame} />
+      <GameHeader onReset={resetGame} onLogout={logout} username={user?.username} />
       
       <main className="game-container">
         <div className="left-panel">
@@ -158,3 +257,4 @@ function App() {
 }
 
 export default App
+
