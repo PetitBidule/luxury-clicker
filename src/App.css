@@ -284,8 +284,8 @@ body {
 
 .reset-button:active {
   transform: translateY(0);
-=======
-.logout-button {
+}
+  .logout-button {
   background: linear-gradient(45deg, #9b59b6, #8e44ad);
   box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
 }
@@ -720,4 +720,4 @@ body {
   .auth-title {
     font-size: 2rem;
   }
-}
+}}}
