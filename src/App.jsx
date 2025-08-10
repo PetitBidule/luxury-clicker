@@ -6,10 +6,24 @@ import MoneyDisplay from './components/MoneyDisplay'
 import ClickButton from './components/ClickButton'
 import UpgradesPanel from './components/UpgradesPanel'
 import StatsPanel from './components/StatsPanel'
+import CreditCardPopup from './components/CreditCardPopup'
 import AudioManager, { useAudio } from './components/AudioManager'
 
 
 function AppContent() {
+
+  const getDefaultUpgrades = () => ({
+    clickUpgrade: { level: 0, cost: 10, effect: 1, name: "Click Upgrade" },
+    autoClicker: { level: 0, cost: 50, effect: 1, name: "Auto Clicker" },
+    investment: { level: 0, cost: 200, effect: 5, name: "Investment" },
+    business: { level: 0, cost: 1000, effect: 25, name: "Business" },
+    luxury: { level: 0, cost: 5000, effect: 100, name: "Luxury" },
+    estate: { level: 0, cost: 10000, effect: 200, name: "Estate" },
+    yacht: { level: 0, cost: 20000, effect: 1000, name: "Yacht" },
+    jet: { level: 0, cost: 40000, effect: 20000, name: "Private Jet" },
+    island: { level: 0, cost: 80000, effect: 50000, name: "Private Island" },
+    empire: { level: 0, cost: 160000, effect: 100000, name: "Business Empire" }
+  })
 
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
@@ -18,18 +32,16 @@ function AppContent() {
   const [money, setMoney] = useState(0)
   const [moneyPerClick, setMoneyPerClick] = useState(1)
   const [moneyPerSecond, setMoneyPerSecond] = useState(0)
-  const [upgrades, setUpgrades] = useState({
-    clickUpgrade: { level: 0, cost: 10, effect: 1, name: "Click Upgrade" },
-    autoClicker: { level: 0, cost: 50, effect: 1, name: "Auto Clicker" },
-    investment: { level: 0, cost: 200, effect: 5, name: "Investment" },
-    business: { level: 0, cost: 1000, effect: 25, name: "Business" },
-    luxury: { level: 0, cost: 5000, effect: 100, name: "Luxury" }
-  })
+  const [clickCost, setClickCost] = useState(1) // Cost per click in centimes
+  const [upgrades, setUpgrades] = useState(getDefaultUpgrades())
   const [stats, setStats] = useState({
     totalClicks: 0,
     totalMoney: 0,
     playTime: 0
   })
+
+  const [showCreditCardPopup, setShowCreditCardPopup] = useState(false)
+  const [rechargeAmount, setRechargeAmount] = useState(0)
 
 
   const { playCashSound } = useAudio()
@@ -87,7 +99,10 @@ function AppContent() {
           setMoney(save.money)
           setMoneyPerClick(save.moneyPerClick)
           setMoneyPerSecond(save.moneyPerSecond)
-          setUpgrades(save.upgrades)
+          setClickCost(save.clickCost || 1) // Default to 1 if not saved
+          const defaultUpgrades = getDefaultUpgrades()
+          const mergedUpgrades = { ...defaultUpgrades, ...(save.upgrades || {}) }
+          setUpgrades(mergedUpgrades)
           setStats(save.stats)
         }
       }
@@ -105,6 +120,7 @@ function AppContent() {
         money,
         moneyPerClick,
         moneyPerSecond,
+        clickCost,
         upgrades,
         stats
       }
@@ -148,7 +164,7 @@ function AppContent() {
 
     const interval = setInterval(saveGame, 10000) // Sauvegarde toutes les 10 secondes
     return () => clearInterval(interval)
-  }, [money, moneyPerClick, moneyPerSecond, upgrades, stats, isAuthenticated])
+  }, [money, moneyPerClick, moneyPerSecond, clickCost, upgrades, stats, isAuthenticated])
 
   // Mise à jour automatique de l'argent par seconde
   useEffect(() => {
@@ -172,12 +188,32 @@ function AppContent() {
   }, [])
 
   const handleClick = () => {
-    setMoney(prev => prev + moneyPerClick)
+    // Check if player has enough money to click (at least 1 centime)
+    if (money < clickCost) {
+      alert('You need at least 1 centime to click! Please recharge your account.')
+      return
+    }
+    
+    // Deduct click cost and add money per click
+    const netGain = moneyPerClick - clickCost
+    setMoney(prev => prev + netGain)
     setStats(prev => ({ 
       ...prev, 
       totalClicks: prev.totalClicks + 1,
-      totalMoney: prev.totalMoney + moneyPerClick
+      totalMoney: prev.totalMoney + netGain
     }))
+  }
+
+  // Recharge function to add money (simulating bank card top-up)
+  const rechargeAccount = () => {
+    setShowCreditCardPopup(true)
+  }
+
+  // Handle recharge from credit card popup
+  const handleRechargeFromPopup = (amountInCentimes) => {
+    setMoney(prev => prev + amountInCentimes)
+    setRechargeAmount(amountInCentimes)
+    alert(`Compte rechargé avec ${(amountInCentimes / 100).toFixed(2)}€ (${amountInCentimes} centimes)!`)
   }
 
   const buyUpgrade = (upgradeKey) => {
@@ -208,13 +244,8 @@ function AppContent() {
       setMoney(0)
       setMoneyPerClick(1)
       setMoneyPerSecond(0)
-      setUpgrades({
-        clickUpgrade: { level: 0, cost: 10, effect: 1, name: "Click Upgrade" },
-        autoClicker: { level: 0, cost: 50, effect: 1, name: "Auto Clicker" },
-        investment: { level: 0, cost: 200, effect: 5, name: "Investment" },
-        business: { level: 0, cost: 1000, effect: 25, name: "Business" },
-        luxury: { level: 0, cost: 5000, effect: 100, name: "Luxury" }
-      })
+      setClickCost(1)
+      setUpgrades(getDefaultUpgrades())
       setStats({
         totalClicks: 0,
         totalMoney: 0,
@@ -235,8 +266,8 @@ function AppContent() {
       
       <main className="game-container">
         <div className="left-panel">
-          <MoneyDisplay money={money} moneyPerSecond={moneyPerSecond} />
-          <ClickButton onClick={handleClick} moneyPerClick={moneyPerClick} />
+          <MoneyDisplay money={money} moneyPerSecond={moneyPerSecond} onRecharge={rechargeAccount} />
+          <ClickButton onClick={handleClick} moneyPerClick={moneyPerClick} money={money} clickCost={clickCost} />
         </div>
         
         <div className="right-panel">
@@ -244,6 +275,7 @@ function AppContent() {
           <StatsPanel stats={stats} />
         </div>
       </main>
+      {showCreditCardPopup && <CreditCardPopup onClose={() => setShowCreditCardPopup(false)} onRecharge={handleRechargeFromPopup} token={token} />}
     </div>
   )
 }

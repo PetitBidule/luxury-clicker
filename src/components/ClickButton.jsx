@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useAudio } from './AudioManager'
 
-const ClickButton = ({ onClick, moneyPerClick }) => {
+const ClickButton = ({ onClick, moneyPerClick, money, clickCost }) => {
   const [isAnimating, setIsAnimating] = useState(false)
   const { playClickSound } = useAudio()
 
@@ -25,16 +25,25 @@ const ClickButton = ({ onClick, moneyPerClick }) => {
     return `$${Math.floor(amount)}`
   }
 
+  const canClick = money >= clickCost
+
   return (
     <div className="click-button-container">
       <button 
-        className={`click-button ${isAnimating ? 'clicking' : ''}`}
+        className={`click-button ${isAnimating ? 'clicking' : ''} ${!canClick ? 'disabled' : ''}`}
         onClick={handleClick}
+        disabled={!canClick}
       >
         <div className="button-content">
           <div className="money-icon">💰</div>
-          <div className="click-text">Click to earn!</div>
-          <div className="money-per-click">+{formatMoney(moneyPerClick)} per click</div>
+          <div className="click-text">Cliquez pour gagner !</div>
+          <div className="money-per-click">+{formatMoney(moneyPerClick)} par clic</div>
+          <div className="click-cost">Coût: 1 centime par clic</div>
+          {!canClick && (
+            <div className="insufficient-funds">
+              Solde insuffisant pour cliquer
+            </div>
+          )}
         </div>
       </button>
     </div>

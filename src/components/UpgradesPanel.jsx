@@ -15,7 +15,12 @@ const UpgradesPanel = ({ upgrades, money, onBuyUpgrade }) => {
       autoClicker: '🤖',
       investment: '📈',
       business: '🏢',
-      luxury: '💎'
+      luxury: '💎',
+      estate: '🏰',
+      yacht: '🛥️',
+      jet: '✈️',
+      island: '🏝️',
+      empire: '👑'
     }
     return icons[upgradeKey] || '🔧'
   }
