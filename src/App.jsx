@@ -5,23 +5,26 @@ import MoneyDisplay from './components/MoneyDisplay'
 import ClickButton from './components/ClickButton'
 import UpgradesPanel from './components/UpgradesPanel'
 import StatsPanel from './components/StatsPanel'
+import AudioManager, { useAudio } from './components/AudioManager'
 
-function App() {
+function AppContent() {
   const [money, setMoney] = useState(0)
   const [moneyPerClick, setMoneyPerClick] = useState(1)
   const [moneyPerSecond, setMoneyPerSecond] = useState(0)
   const [upgrades, setUpgrades] = useState({
-    clickUpgrade: { level: 0, cost: 10, effect: 1, name: "Amélioration du Clic" },
-    autoClicker: { level: 0, cost: 50, effect: 1, name: "Clic Automatique" },
-    investment: { level: 0, cost: 200, effect: 5, name: "Investissement" },
-    business: { level: 0, cost: 1000, effect: 25, name: "Entreprise" },
-    luxury: { level: 0, cost: 5000, effect: 100, name: "Luxe" }
+    clickUpgrade: { level: 0, cost: 10, effect: 1, name: "Click Upgrade" },
+    autoClicker: { level: 0, cost: 50, effect: 1, name: "Auto Clicker" },
+    investment: { level: 0, cost: 200, effect: 5, name: "Investment" },
+    business: { level: 0, cost: 1000, effect: 25, name: "Business" },
+    luxury: { level: 0, cost: 5000, effect: 100, name: "Luxury" }
   })
   const [stats, setStats] = useState({
     totalClicks: 0,
     totalMoney: 0,
     playTime: 0
   })
+
+  const { playCashSound } = useAudio()
 
   // Sauvegarde automatique
   useEffect(() => {
@@ -86,6 +89,9 @@ function App() {
   const buyUpgrade = (upgradeKey) => {
     const upgrade = upgrades[upgradeKey]
     if (money >= upgrade.cost) {
+      // Jouer le son de cash
+      playCashSound()
+      
       setMoney(prev => prev - upgrade.cost)
       
       const newUpgrades = { ...upgrades }
@@ -104,16 +110,16 @@ function App() {
   }
 
   const resetGame = () => {
-    if (confirm('Êtes-vous sûr de vouloir recommencer le jeu ?')) {
+    if (confirm('Are you sure you want to reset the game?')) {
       setMoney(0)
       setMoneyPerClick(1)
       setMoneyPerSecond(0)
       setUpgrades({
-        clickUpgrade: { level: 0, cost: 10, effect: 1, name: "Amélioration du Clic" },
-        autoClicker: { level: 0, cost: 50, effect: 1, name: "Clic Automatique" },
-        investment: { level: 0, cost: 200, effect: 5, name: "Investissement" },
-        business: { level: 0, cost: 1000, effect: 25, name: "Entreprise" },
-        luxury: { level: 0, cost: 5000, effect: 100, name: "Luxe" }
+        clickUpgrade: { level: 0, cost: 10, effect: 1, name: "Click Upgrade" },
+        autoClicker: { level: 0, cost: 50, effect: 1, name: "Auto Clicker" },
+        investment: { level: 0, cost: 200, effect: 5, name: "Investment" },
+        business: { level: 0, cost: 1000, effect: 25, name: "Business" },
+        luxury: { level: 0, cost: 5000, effect: 100, name: "Luxury" }
       })
       setStats({
         totalClicks: 0,
@@ -140,6 +146,14 @@ function App() {
         </div>
       </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <AudioManager>
+      <AppContent />
+    </AudioManager>
   )
 }
 

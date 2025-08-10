@@ -1,6 +1,9 @@
 import React from 'react'
+import { useAudio } from './AudioManager'
 
 const GameHeader = ({ onReset }) => {
+  const { isAudioEnabled, toggleAudio } = useAudio()
+
   return (
     <header className="game-header">
       <div className="header-content">
@@ -8,11 +11,20 @@ const GameHeader = ({ onReset }) => {
           <span className="luxury">Luxury</span>
           <span className="clicker">Clicker</span>
         </h1>
-        <p className="game-subtitle">Devenez milliardaire en un clic !</p>
+        <p className="game-subtitle">Become a billionaire with one click!</p>
       </div>
-      <button className="reset-button" onClick={onReset}>
-        🔄 Recommencer
-      </button>
+      <div className="header-controls">
+        <button 
+          className={`audio-button ${isAudioEnabled ? 'enabled' : 'disabled'}`} 
+          onClick={toggleAudio}
+          title={isAudioEnabled ? 'Disable sound' : 'Enable sound'}
+        >
+          {isAudioEnabled ? '🔊' : '🔇'}
+        </button>
+        <button className="reset-button" onClick={onReset}>
+          🔄 Reset Game
+        </button>
+      </div>
     </header>
   )
 }

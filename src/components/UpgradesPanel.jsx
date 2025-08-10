@@ -22,7 +22,7 @@ const UpgradesPanel = ({ upgrades, money, onBuyUpgrade }) => {
 
   return (
     <div className="upgrades-panel">
-      <h3>Améliorations</h3>
+      <h3>Upgrades</h3>
       <div className="upgrades-list">
         {Object.entries(upgrades).map(([key, upgrade]) => (
           <div key={key} className="upgrade-item">
@@ -32,9 +32,9 @@ const UpgradesPanel = ({ upgrades, money, onBuyUpgrade }) => {
                 <span className="upgrade-name">{upgrade.name}</span>
               </div>
               <div className="upgrade-details">
-                <span className="upgrade-level">Niveau {upgrade.level}</span>
+                <span className="upgrade-level">Level {upgrade.level}</span>
                 <span className="upgrade-effect">
-                  +{formatMoney(upgrade.effect)} {key === 'clickUpgrade' ? 'par clic' : 'par seconde'}
+                  +{formatMoney(upgrade.effect)} {key === 'clickUpgrade' ? 'per click' : 'per second'}
                 </span>
               </div>
             </div>
