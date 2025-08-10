@@ -1,9 +1,8 @@
 import React from 'react'
 import { useAudio } from './AudioManager'
 
-const GameHeader = ({ onReset }) => {
+const GameHeader = ({ onReset, onLogout, username }) => {
   const { isAudioEnabled, toggleAudio } = useAudio()
-
 
   return (
     <header className="game-header">
@@ -13,6 +12,9 @@ const GameHeader = ({ onReset }) => {
           <span className="clicker">Clicker</span>
         </h1>
         <p className="game-subtitle">Become a billionaire with one click!</p>
+        {username && (
+          <p className="username-display">Welcome, {username}!</p>
+        )}
       </div>
       <div className="header-controls">
         <button 
@@ -24,7 +26,9 @@ const GameHeader = ({ onReset }) => {
         </button>
         <button className="reset-button" onClick={onReset}>
           🔄 Reset Game
-
+        </button>
+        <button className="logout-button" onClick={onLogout}>
+          🚪 Logout
         </button>
       </div>
     </header>
