@@ -12,16 +12,13 @@ const MoneyDisplay = ({ money, moneyPerSecond }) => {
   return (
     <div className="money-display">
       <div className="current-money">
-        <h2>Argent Actuel</h2>
+        <h2>Current Money</h2>
         <div className="money-amount">{formatMoney(money)}</div>
       </div>
-      
-      {moneyPerSecond > 0 && (
-        <div className="money-per-second">
-          <span className="label">Par seconde :</span>
-          <span className="amount">+{formatMoney(moneyPerSecond)}</span>
-        </div>
-      )}
+      <div className="money-per-second">
+        <span className="label">Per Second</span>
+        <span className="amount">+{formatMoney(moneyPerSecond)}</span>
+      </div>
     </div>
   )
 }

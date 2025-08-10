@@ -1,6 +1,10 @@
 import React from 'react'
+import { useAudio } from './AudioManager'
 
-const GameHeader = ({ onReset, onLogout, username }) => {
+const GameHeader = ({ onReset }) => {
+  const { isAudioEnabled, toggleAudio } = useAudio()
+
+
   return (
     <header className="game-header">
       <div className="header-content">
@@ -8,17 +12,19 @@ const GameHeader = ({ onReset, onLogout, username }) => {
           <span className="luxury">Luxury</span>
           <span className="clicker">Clicker</span>
         </h1>
-        <p className="game-subtitle">Devenez milliardaire en un clic !</p>
-        {username && (
-          <p className="user-welcome">Bienvenue, {username} !</p>
-        )}
+        <p className="game-subtitle">Become a billionaire with one click!</p>
       </div>
-      <div className="header-actions">
-        <button className="reset-button" onClick={onReset}>
-          🔄 Recommencer
+      <div className="header-controls">
+        <button 
+          className={`audio-button ${isAudioEnabled ? 'enabled' : 'disabled'}`} 
+          onClick={toggleAudio}
+          title={isAudioEnabled ? 'Disable sound' : 'Enable sound'}
+        >
+          {isAudioEnabled ? '🔊' : '🔇'}
         </button>
-        <button className="logout-button" onClick={onLogout}>
-          🚪 Déconnexion
+        <button className="reset-button" onClick={onReset}>
+          🔄 Reset Game
+
         </button>
       </div>
     </header>
