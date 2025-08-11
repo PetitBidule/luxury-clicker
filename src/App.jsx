@@ -7,6 +7,7 @@ import ClickButton from './components/ClickButton'
 import UpgradesPanel from './components/UpgradesPanel'
 import StatsPanel from './components/StatsPanel'
 import AudioManager, { useAudio } from './components/AudioManager'
+import StripeBuyButton from './components/StripeBuyButton'
 
 
 function AppContent() {
@@ -14,6 +15,7 @@ function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
+  const [walletCents, setWalletCents] = useState(0)
 
   const [money, setMoney] = useState(0)
   const [moneyPerClick, setMoneyPerClick] = useState(1)
@@ -61,6 +63,8 @@ function AppContent() {
         setIsAuthenticated(true)
         // Charger la sauvegarde du jeu
         loadGameSave(token)
+        // Charger le solde
+        loadWallet(token)
       } else {
         // Token invalide, déconnecter
         logout()
@@ -93,6 +97,20 @@ function AppContent() {
       }
     } catch (error) {
       console.error('Erreur lors du chargement de la sauvegarde:', error)
+    }
+  }
+
+  const loadWallet = async (userToken) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/payments/wallet', {
+        headers: { 'Authorization': `Bearer ${userToken}` }
+      })
+      const data = await response.json()
+      if (data.success) {
+        setWalletCents(data.walletCents)
+      }
+    } catch (e) {
+      console.error('Erreur lors du chargement du portefeuille:', e)
     }
   }
 
@@ -172,12 +190,34 @@ function AppContent() {
   }, [])
 
   const handleClick = () => {
-    setMoney(prev => prev + moneyPerClick)
-    setStats(prev => ({ 
-      ...prev, 
-      totalClicks: prev.totalClicks + 1,
-      totalMoney: prev.totalMoney + moneyPerClick
-    }))
+    debitOneCentAndClick()
+  }
+
+  const debitOneCentAndClick = async () => {
+    if (!token) return
+    try {
+      const response = await fetch('http://localhost:5000/api/payments/wallet/debit-click', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      })
+      if (response.ok) {
+        setWalletCents(prev => prev - 1)
+        setMoney(prev => prev + moneyPerClick)
+        setStats(prev => ({ 
+          ...prev, 
+          totalClicks: prev.totalClicks + 1,
+          totalMoney: prev.totalMoney + moneyPerClick
+        }))
+      } else if (response.status === 402) {
+        alert('Solde insuffisant. Veuillez recharger votre compte.')
+      }
+    } catch (e) {
+      console.error('Erreur de débit:', e)
+    }
   }
 
   const buyUpgrade = (upgradeKey) => {
@@ -223,6 +263,33 @@ function AppContent() {
     }
   }
 
+  const startTopup = async () => {
+    if (!token) return
+    const amountStr = prompt('Montant à recharger en euros (min 0.50):', '5')
+    if (!amountStr) return
+    const euros = Number(amountStr)
+    if (Number.isNaN(euros) || euros <= 0) return
+    const amountCents = Math.round(euros * 100)
+    try {
+      const response = await fetch('http://localhost:5000/api/payments/wallet/topup/session', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ amountCents })
+      })
+      const data = await response.json()
+      if (data.success && data.url) {
+        window.location.href = data.url
+      } else {
+        alert('Impossible de créer la session de paiement.')
+      }
+    } catch (e) {
+      console.error('Erreur de création de session Stripe:', e)
+    }
+  }
+
   // Afficher l'écran d'authentification si non connecté
   if (!isAuthenticated) {
     return <AuthContainer onAuthSuccess={handleAuthSuccess} />
@@ -231,17 +298,18 @@ function AppContent() {
   // Afficher le jeu si connecté
   return (
     <div className="App">
-      <GameHeader onReset={resetGame} onLogout={logout} username={user?.username} />
+      <GameHeader onReset={resetGame} onLogout={logout} username={user?.username} walletCents={walletCents} onTopup={startTopup} />
       
       <main className="game-container">
         <div className="left-panel">
           <MoneyDisplay money={money} moneyPerSecond={moneyPerSecond} />
-          <ClickButton onClick={handleClick} moneyPerClick={moneyPerClick} />
+          <ClickButton onClick={handleClick} moneyPerClick={moneyPerClick} disabled={walletCents < 1} />
         </div>
         
         <div className="right-panel">
           <UpgradesPanel upgrades={upgrades} money={money} onBuyUpgrade={buyUpgrade} />
           <StatsPanel stats={stats} />
+          <StripeBuyButton />
         </div>
       </main>
     </div>

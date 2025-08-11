@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAudio } from './AudioManager'
 
-const GameHeader = ({ onReset, onLogout, username }) => {
+const GameHeader = ({ onReset, onLogout, username, walletCents, onTopup }) => {
   const { isAudioEnabled, toggleAudio } = useAudio()
 
   return (
@@ -17,6 +17,12 @@ const GameHeader = ({ onReset, onLogout, username }) => {
         )}
       </div>
       <div className="header-controls">
+        <div className="wallet-display" title="Solde du portefeuille">
+          💳 {(walletCents ?? 0) / 100} €
+        </div>
+        <button className="topup-button" onClick={onTopup}>
+          ➕ Recharger le compte
+        </button>
         <button 
           className={`audio-button ${isAudioEnabled ? 'enabled' : 'disabled'}`} 
           onClick={toggleAudio}

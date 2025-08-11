@@ -50,6 +50,7 @@ async function initDatabase() {
         username VARCHAR(50) UNIQUE NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
+        wallet_cents BIGINT NOT NULL DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
@@ -69,6 +70,29 @@ async function initDatabase() {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
+
+    // Créer la table des paiements (top-ups) Stripe
+    await dbConnection.query(`
+      CREATE TABLE IF NOT EXISTS payments (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        session_id VARCHAR(191) NOT NULL,
+        amount_cents BIGINT NOT NULL,
+        status ENUM('created','paid','expired','canceled') DEFAULT 'created',
+        credited TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_payments_session_id (session_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Sécurité: tenter d'ajouter la colonne wallet_cents si base déjà existante
+    try {
+      await dbConnection.query('ALTER TABLE users ADD COLUMN wallet_cents BIGINT NOT NULL DEFAULT 0');
+    } catch (e) {
+      // ignore si déjà existante
+    }
     
     console.log('✅ Base de données initialisée avec succès');
     await dbConnection.end();
