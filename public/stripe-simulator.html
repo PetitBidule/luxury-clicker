@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Payment Simulator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stripe-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+        .stripe-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .stripe-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #635bff;
+            margin-bottom: 10px;
+        }
+        .payment-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a1f36;
+            margin-bottom: 5px;
+        }
+        .merchant-name {
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #635bff;
+            box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .pay-button {
+            width: 100%;
+            background: #635bff;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        .pay-button:hover {
+            background: #5a52ff;
+        }
+        .security-info {
+            text-align: center;
+            margin-top: 20px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .success-message {
+            display: none;
+            text-align: center;
+            color: #059669;
+            background: #d1fae5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stripe-container">
+        <div class="stripe-header">
+            <div class="stripe-logo">stripe</div>
+            <div class="payment-amount" id="amount">€10.00</div>
+            <div class="merchant-name">Luxury Clicker Game</div>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✅ Paiement simulé avec succès !<br>
+            Redirection en cours...
+        </div>
+
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="cardNumber">Numéro de carte</label>
+                <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" value="4242 4242 4242 4242">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="expiry">MM / AA</label>
+                    <input type="text" id="expiry" placeholder="12 / 25" value="12 / 25">
+                </div>
+                <div class="form-group">
+                    <label for="cvc">CVC</label>
+                    <input type="text" id="cvc" placeholder="123" value="123">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="votre@email.com" value="test@example.com">
+            </div>
+            
+            <button type="submit" class="pay-button">
+                💳 Payer <span id="payAmount">€10.00</span>
+            </button>
+        </form>
+        
+        <div class="security-info">
+            🔒 Paiement sécurisé simulé • Données de test uniquement
+        </div>
+    </div>
+
+    <script>
+        // Récupérer les paramètres de l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = urlParams.get('amount') || '10';
+        const currency = urlParams.get('currency') || 'EUR';
+        const session = urlParams.get('session');
+        const userId = urlParams.get('userId');
+
+        // Mettre à jour l'affichage du montant
+        const amountDisplay = currency === 'EUR' ? `€${amount}` : `${amount} ${currency}`;
+        document.getElementById('amount').textContent = amountDisplay;
+        document.getElementById('payAmount').textContent = amountDisplay;
+
+        // Gérer la soumission du formulaire
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Afficher le message de succès
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('paymentForm').style.display = 'none';
+            
+            // Simuler un délai de traitement puis rediriger
+            setTimeout(async () => {
+                try {
+                    // Appeler le backend pour confirmer le paiement
+                    const response = await fetch(`http://localhost:5000/api/payment/payment-success?session=${session}&amount=${amount}&userId=${userId}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Rediriger vers l'application avec les paramètres de succès
+                        const returnUrl = `http://localhost:5174/?payment=success&amount=${amount}&amountInCentimes=${data.amountInCentimes}`;
+                        window.location.href = returnUrl;
+                    } else {
+                        alert('Erreur lors de la confirmation du paiement');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    // Redirection de fallback
+                    const returnUrl = `http://localhost:5174/?payment=success&amount=${amount}&amountInCentimes=${Math.floor(parseFloat(amount) * 100)}`;
+                    window.location.href = returnUrl;
+                }
+            }, 2000);
+        });
+
+        // Formatage automatique du numéro de carte
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            if (formattedValue.length > 19) formattedValue = formattedValue.substr(0, 19);
+            e.target.value = formattedValue;
+        });
+
+        // Formatage automatique de la date d'expiration
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + ' / ' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
