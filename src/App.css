@@ -5,9 +5,13 @@
   box-sizing: border-box;
 }
 
+
+
+
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4facfe 100%);
   color: #2d3748;
   line-height: 1.6;
   min-height: 100vh;
@@ -781,3 +785,27 @@ body {
   .logout-button:active {
     transform: translateY(0);
   }
+
+
+  .stripe-button-wrapper {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 6px 15px rgba(118, 75, 162, 0.4);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .stripe-button-wrapper:hover {
+    box-shadow: 0 9px 25px rgba(118, 75, 162, 0.6);
+    transform: translateY(-2px);
+  }
+
+  .stripe-button-wrapper:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+  }
+}
+}

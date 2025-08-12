@@ -92,7 +92,7 @@ const Leaderboard = ({ token }) => {
       <button onClick={fetchLeaderboard} className="refresh-button">
         🔄 Actualiser
       </button>
-    </div>
+    </div>  
   )
 }
 
