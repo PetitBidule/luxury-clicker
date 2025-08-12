@@ -4,6 +4,7 @@ import { initDatabase } from './config/database.js';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import gameRoutes from './routes/game.js';
+import paymentRoutes from './routes/payment.js';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/game', gameRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Route de test
 app.get('/api/health', (req, res) => {

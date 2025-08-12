@@ -50,6 +50,7 @@ async function initDatabase() {
         username VARCHAR(50) UNIQUE NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
+        credits DECIMAL(10, 2) DEFAULT 0.00,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
@@ -79,4 +80,43 @@ async function initDatabase() {
   }
 }
 
-export { pool, initDatabase }; 
+// Fonctions pour gérer les crédits utilisateur
+async function getUserCredits(userId) {
+  try {
+    const [rows] = await pool.execute(
+      'SELECT credits FROM users WHERE id = ?',
+      [userId]
+    );
+    return rows.length > 0 ? parseFloat(rows[0].credits) : 0;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des crédits:', error);
+    throw error;
+  }
+}
+
+async function updateUserCredits(userId, newCredits) {
+  try {
+    await pool.execute(
+      'UPDATE users SET credits = ? WHERE id = ?',
+      [newCredits, userId]
+    );
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour des crédits:', error);
+    throw error;
+  }
+}
+
+async function getUserById(userId) {
+  try {
+    const [rows] = await pool.execute(
+      'SELECT * FROM users WHERE id = ?',
+      [userId]
+    );
+    return rows.length > 0 ? rows[0] : null;
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'utilisateur:', error);
+    throw error;
+  }
+}
+
+export { pool, initDatabase, getUserCredits, updateUserCredits, getUserById }; 
