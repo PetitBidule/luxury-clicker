@@ -254,18 +254,21 @@ async function initDatabase() {
 
     // Insérer les objets virtuels par défaut
     await dbConnection.query(`
-      INSERT IGNORE INTO virtual_items (item_name, item_type, item_description, item_image, base_price, rarity, is_limited_edition, max_supply, special_effects) VALUES
-      ('Curseur Or', 'cursor', 'Un curseur en or massif 24 carats', '/images/cursors/gold-cursor.png', 5000, 'rare', FALSE, NULL, '{"clickEffect": "goldSparkle", "soundEffect": "goldClink"}'),
-      ('Montre Rolex', 'cursor', 'Montre de luxe suisse pour cliquer avec style', '/images/cursors/rolex-cursor.png', 25000, 'epic', FALSE, NULL, '{"clickEffect": "timeWarp", "bonusMultiplier": 1.1}'),
-      ('Stylo Montblanc', 'cursor', 'Stylo de prestige pour signer vos clics', '/images/cursors/montblanc-cursor.png', 15000, 'epic', FALSE, NULL, '{"clickEffect": "inkSplash", "eleganceBonus": true}'),
-      ('Diamant Curseur', 'cursor', 'Le summum du luxe pour vos clics', '/images/cursors/diamond-cursor.png', 100000, 'legendary', TRUE, 50, '{"clickEffect": "diamondBurst", "bonusMultiplier": 1.5}'),
-      ('Effet Pluie d\\'Or', 'effect', 'Pluie de pièces d\\'or à chaque clic', '/images/effects/gold-rain.gif', 10000, 'rare', FALSE, NULL, '{"effectType": "goldRain", "duration": 300}'),
-      ('Explosion Diamant', 'effect', 'Explosion de diamants spectaculaire', '/images/effects/diamond-explosion.gif', 50000, 'legendary', TRUE, 100, '{"effectType": "diamondExplosion", "intensity": "high"}'),
-      ('Yacht de Luxe', 'vehicle', 'Yacht privé pour naviguer en style', '/images/vehicles/luxury-yacht.jpg', 500000, 'legendary', FALSE, NULL, '{"prestigeBonus": 50, "displayLocation": "marina"}'),
-      ('Ferrari LaFerrari', 'vehicle', 'Supercar italienne exclusive', '/images/vehicles/laferrari.jpg', 300000, 'epic', TRUE, 200, '{"prestigeBonus": 30, "displayLocation": "garage"}'),
-      ('Villa Monaco', 'property', 'Villa avec vue sur la Méditerranée', '/images/properties/monaco-villa.jpg', 2000000, 'mythic', TRUE, 10, '{"prestigeBonus": 200, "displayLocation": "properties"}'),
-      ('NFT Clic d\\'Or', 'nft', 'Œuvre d\\'art numérique unique du 15 août', '/images/nfts/golden-click.png', 75000, 'legendary', TRUE, 10, '{"uniqueId": true, "artistSignature": "LuxuryMaster", "dateCreated": "2024-08-15"})
-    `);
+    INSERT IGNORE INTO virtual_items 
+(item_name, item_type, item_description, item_image, base_price, rarity, is_limited_edition, max_supply, special_effects) 
+VALUES
+('Curseur Or', 'cursor', 'Un curseur en or massif 24 carats', '/images/cursors/gold-cursor.png', 5000, 'rare', FALSE, NULL, '{"clickEffect": "goldSparkle", "soundEffect": "goldClink"}'),
+('Montre Rolex', 'cursor', 'Montre de luxe suisse pour cliquer avec style', '/images/cursors/rolex-cursor.png', 25000, 'epic', FALSE, NULL, '{"clickEffect": "timeWarp", "bonusMultiplier": 1.1}'),
+('Stylo Montblanc', 'cursor', 'Stylo de prestige pour signer vos clics', '/images/cursors/montblanc-cursor.png', 15000, 'epic', FALSE, NULL, '{"clickEffect": "inkSplash", "eleganceBonus": true}'),
+('Diamant Curseur', 'cursor', 'Le summum du luxe pour vos clics', '/images/cursors/diamond-cursor.png', 100000, 'legendary', TRUE, 50, '{"clickEffect": "diamondBurst", "bonusMultiplier": 1.5}'),
+('Effet Pluie d Or', 'effect', 'Pluie de pièces d or à chaque clic', '/images/effects/gold-rain.gif', 10000, 'rare', FALSE, NULL, '{"effectType": "goldRain", "duration": 300}'),
+('Explosion Diamant', 'effect', 'Explosion de diamants spectaculaire', '/images/effects/diamond-explosion.gif', 50000, 'legendary', TRUE, 100, '{"effectType": "diamondExplosion", "intensity": "high"}'),
+('Yacht de Luxe', 'vehicle', 'Yacht privé pour naviguer en style', '/images/vehicles/luxury-yacht.jpg', 500000, 'legendary', FALSE, NULL, '{"prestigeBonus": 50, "displayLocation": "marina"}'),
+('Ferrari LaFerrari', 'vehicle', 'Supercar italienne exclusive', '/images/vehicles/laferrari.jpg', 300000, 'epic', TRUE, 200, '{"prestigeBonus": 30, "displayLocation": "garage"}'),
+('Villa Monaco', 'property', 'Villa avec vue sur la Méditerranée', '/images/properties/monaco-villa.jpg', 2000000, 'mythic', TRUE, 10, '{"prestigeBonus": 200, "displayLocation": "properties"}'),
+('NFT Clic d Or', 'nft', 'Œuvre d art numérique unique du 15 août', '/images/nfts/golden-click.png', 75000, 'legendary', TRUE, 10, '{"uniqueId": true, "artistSignature": "LuxuryMaster", "dateCreated": "2024-08-15"}');
+
+      `);
 
     console.log('✅ Base de données initialisée avec succès');
     await dbConnection.end();

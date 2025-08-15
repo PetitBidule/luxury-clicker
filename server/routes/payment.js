@@ -1,7 +1,6 @@
 import express from 'express';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
-import dotenv from 'dotenv';
 import { authenticateToken } from '../middleware/auth.js';
 import { getUserCredits, updateUserCredits } from '../config/database.js';
 
@@ -32,7 +31,7 @@ if (!stripeSecretKey) {
   throw new Error('STRIPE_SECRET_KEY manquante. Ajoutez-la dans votre fichier .env');
 }
 
-const stripe = new Stripe(stripeSecretKey);
+// const stripe = new Stripe(stripeSecretKey);
 
 /* ============================
    Récupération des crédits
