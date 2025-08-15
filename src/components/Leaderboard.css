@@ -1,0 +1,235 @@
+.leaderboard {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  border: 2px solid #FFD700;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.leaderboard h3 {
+  color: #FFD700;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.leaderboard-list {
+  max-height: 600px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #FFD700 #2d2d2d;
+}
+
+.leaderboard-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaderboard-list::-webkit-scrollbar-track {
+  background: #2d2d2d;
+  border-radius: 4px;
+}
+
+.leaderboard-list::-webkit-scrollbar-thumb {
+  background: #FFD700;
+  border-radius: 4px;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.leaderboard-item:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: #FFD700;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+.leaderboard-item.top-three {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 165, 0, 0.1) 100%);
+  border: 2px solid #FFD700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.leaderboard-item.top-three::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.rank {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-right: 15px;
+  min-width: 50px;
+  text-align: center;
+  color: #FFD700;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.player-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player-header {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-shadow: 0 0 5px currentColor;
+  opacity: 0.9;
+}
+
+.username {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.custom-phrase {
+  font-style: italic;
+  color: #ccc;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  border-left: 3px solid #FFD700;
+  padding-left: 10px;
+  margin: 5px 0;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 0.9rem;
+}
+
+.stats span {
+  color: #ddd;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  white-space: nowrap;
+}
+
+.total-spent {
+  color: #00FF00 !important;
+  font-weight: bold;
+}
+
+.money {
+  color: #FFD700 !important;
+  font-weight: bold;
+}
+
+.clicks {
+  color: #87CEEB !important;
+}
+
+.badges {
+  color: #FF6347 !important;
+}
+
+.prestige-level {
+  color: #FF1493;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-shadow: 0 0 5px rgba(255, 20, 147, 0.5);
+  padding: 4px 8px;
+  background: rgba(255, 20, 147, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 20, 147, 0.3);
+  align-self: flex-start;
+}
+
+.loading, .error, .no-data {
+  text-align: center;
+  padding: 20px;
+  color: #ccc;
+  font-style: italic;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+.retry-button, .refresh-button {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 10px auto;
+  display: block;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.retry-button:hover, .refresh-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+  background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+}
+
+.retry-button:active, .refresh-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .leaderboard {
+    margin: 10px 0;
+    padding: 15px;
+  }
+  
+  .leaderboard-item {
+    padding: 12px;
+  }
+  
+  .stats {
+    gap: 8px;
+  }
+  
+  .stats span {
+    font-size: 0.8rem;
+    padding: 3px 6px;
+  }
+  
+  .rank {
+    font-size: 1.2rem;
+    min-width: 40px;
+    margin-right: 10px;
+  }
+}

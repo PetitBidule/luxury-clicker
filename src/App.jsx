@@ -8,6 +8,9 @@ import UpgradesPanel from './components/UpgradesPanel'
 import StatsPanel from './components/StatsPanel'
 import AudioManager, { useAudio } from './components/AudioManager'
 import Leaderboard from './components/Leaderboard'
+import LuxuryShop from './components/LuxuryShop'
+import SocialMessages from './components/SocialMessages'
+import UserProfile from './components/UserProfile'
 
 
 function AppContent() {
@@ -19,6 +22,8 @@ function AppContent() {
   const [money, setMoney] = useState(0)
   const [moneyPerClick, setMoneyPerClick] = useState(1)
   const [moneyPerSecond, setMoneyPerSecond] = useState(0)
+  const [userCredits, setUserCredits] = useState(0)
+  const [currentView, setCurrentView] = useState('game') // 'game', 'leaderboard', 'shop', 'profile'
   const [upgrades, setUpgrades] = useState({
     clickUpgrade: { level: 0, cost: 10, effect: 1, name: "Click Upgrade" },
     autoClicker: { level: 0, cost: 50, effect: 1, name: "Auto Clicker" },
@@ -179,6 +184,33 @@ function AppContent() {
       totalClicks: prev.totalClicks + 1,
       totalMoney: prev.totalMoney + moneyPerClick
     }))
+
+    // Enregistrer les gros clics pour le système de prestige
+    if (moneyPerClick >= 1000) {
+      handleBigClick(moneyPerClick)
+    }
+  }
+
+  const handleBigClick = async (amount) => {
+    try {
+      await fetch('http://localhost:5000/api/prestige/big-click', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          amount,
+          message: `Clic de ${amount >= 1e6 ? (amount/1e6).toFixed(1) + 'M' : (amount/1e3).toFixed(1) + 'K'}€ !`
+        })
+      })
+    } catch (error) {
+      console.error('Erreur lors de l\'enregistrement du gros clic:', error)
+    }
+  }
+
+  const handlePurchase = (cost) => {
+    setUserCredits(prev => prev - cost)
   }
 
   const buyUpgrade = (upgradeKey) => {
@@ -234,17 +266,71 @@ function AppContent() {
     <div className="App">
       <GameHeader onReset={resetGame} onLogout={logout} username={user?.username} />
       
+      {/* Navigation pour les fonctionnalités sociales */}
+      <nav className="luxury-nav">
+        <button 
+          className={`nav-btn ${currentView === 'game' ? 'active' : ''}`}
+          onClick={() => setCurrentView('game')}
+        >
+          🎮 Jeu
+        </button>
+        <button 
+          className={`nav-btn ${currentView === 'leaderboard' ? 'active' : ''}`}
+          onClick={() => setCurrentView('leaderboard')}
+        >
+          🏆 Classement
+        </button>
+        <button 
+          className={`nav-btn ${currentView === 'shop' ? 'active' : ''}`}
+          onClick={() => setCurrentView('shop')}
+        >
+          🏪 Boutique
+        </button>
+        <button 
+          className={`nav-btn ${currentView === 'profile' ? 'active' : ''}`}
+          onClick={() => setCurrentView('profile')}
+        >
+          👑 Profil
+        </button>
+      </nav>
+
       <main className="game-container">
-        <div className="left-panel">
-          <MoneyDisplay money={money} moneyPerSecond={moneyPerSecond} />
-          <ClickButton onClick={handleClick} moneyPerClick={moneyPerClick} />
-        </div>
-        
-        <div className="right-panel">
-          <UpgradesPanel upgrades={upgrades} money={money} onBuyUpgrade={buyUpgrade} />
-          <StatsPanel stats={stats} />
-          <Leaderboard/>
-        </div>
+        {currentView === 'game' && (
+          <>
+            <div className="left-panel">
+              <MoneyDisplay money={money} moneyPerSecond={moneyPerSecond} />
+              <ClickButton onClick={handleClick} moneyPerClick={moneyPerClick} />
+              <SocialMessages token={token} />
+            </div>
+            
+            <div className="right-panel">
+              <UpgradesPanel upgrades={upgrades} money={money} onBuyUpgrade={buyUpgrade} />
+              <StatsPanel stats={stats} />
+            </div>
+          </>
+        )}
+
+        {currentView === 'leaderboard' && (
+          <div className="full-width-panel">
+            <Leaderboard token={token} />
+          </div>
+        )}
+
+        {currentView === 'shop' && (
+          <div className="full-width-panel">
+            <LuxuryShop 
+              token={token} 
+              userCredits={userCredits} 
+              onPurchase={handlePurchase} 
+            />
+          </div>
+        )}
+
+        {currentView === 'profile' && (
+          <div className="full-width-panel">
+            <UserProfile token={token} isOwnProfile={true} />
+          </div>
+        )}
       </main>
     </div>
   )

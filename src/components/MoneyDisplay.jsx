@@ -19,6 +19,13 @@ const MoneyDisplay = ({ money, moneyPerSecond }) => {
         <span className="label">Per Second</span>
         <span className="amount">+{formatMoney(moneyPerSecond)}</span>
       </div>
+      
+<stripe-buy-button
+  buy-button-id="buy_btn_1RusnfBJTCuuY1AKgywBDLuP"
+  publishable-key="pk_live_51RusN4BJTCuuY1AKpMt6EvTEKoOLMeY72WhSRuHuWy7zEK00WtFJEXUPSKOykPfst6llCiZDWn5CdIOU3YCfthQn00EfZLZfrU"
+>
+</stripe-buy-button>
+
     </div>
   )
 }
