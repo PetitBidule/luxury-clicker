@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import gameRoutes from './routes/game.js';
 import paymentRoutes from './routes/payment.js';
+import socialRoutes from './routes/social.js';
+import prestigeRoutes from './routes/prestige.js';
 
 dotenv.config();
 
@@ -23,6 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/social', socialRoutes);
+app.use('/api/prestige', prestigeRoutes);
 
 // Route de test
 app.get('/api/health', (req, res) => {

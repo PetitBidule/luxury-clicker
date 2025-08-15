@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import './Leaderboard.css'
 
 const Leaderboard = ({ token }) => {
   const [leaderboard, setLeaderboard] = useState([])
@@ -16,7 +17,7 @@ const Leaderboard = ({ token }) => {
   const fetchLeaderboard = async () => {
     try {
       setLoading(true)
-      const response = await fetch('http://localhost:5000/api/game/leaderboard')
+      const response = await fetch('http://localhost:5000/api/social/leaderboard')
       const data = await response.json()
 
       if (data.success) {
@@ -79,11 +80,27 @@ const Leaderboard = ({ token }) => {
                 {index > 2 && `#${index + 1}`}
               </div>
               <div className="player-info">
-                <div className="username">{player.username}</div>
-                <div className="stats">
-                  <span className="money">{formatMoney(player.money)}</span>
-                  <span className="clicks">{player.totalClicks} clics</span>
+                <div className="player-header">
+                  <span 
+                    className="title" 
+                    style={{ color: player.title?.color || '#8B4513' }}
+                  >
+                    {player.title?.icon} {player.title?.name}
+                  </span>
+                  <div className="username">{player.username}</div>
                 </div>
+                {player.customPhrase && (
+                  <div className="custom-phrase">"{player.customPhrase}"</div>
+                )}
+                <div className="stats">
+                  <span className="total-spent">💰 {formatMoney(player.totalSpent)} dépensé</span>
+                  <span className="money">💎 {formatMoney(player.currentMoney)}</span>
+                  <span className="clicks">👆 {player.totalClicks} clics</span>
+                  <span className="badges">🏆 {player.badgeCount} badges</span>
+                </div>
+                {player.prestigeLevel > 0 && (
+                  <div className="prestige-level">⭐ Prestige {player.prestigeLevel}</div>
+                )}
               </div>
             </div>
           ))
