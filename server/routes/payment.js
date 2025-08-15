@@ -1,10 +1,21 @@
 import express from 'express';
 import Stripe from 'stripe';
+import dotenv from 'dotenv';
 import { authenticateToken } from '../middleware/auth.js';
 import { getUserById, updateUserCredits, getUserCredits } from '../config/database.js';
 
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Charger les variables d'environnement AVANT d'utiliser process.env
+dotenv.config();
+
+// Vérifier la présence de la clé Stripe pour éviter l'initialisation sans authentificateur
+const stripeSecretKey = "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";
+if (!stripeSecretKey) {
+  throw new Error('STRIPE_SECRET_KEY manquante. Ajoutez-la dans votre fichier .env');
+}
+
+const stripe = new Stripe(stripeSecretKey);
 
 // Endpoint pour récupérer les crédits de l'utilisateur
 router.get('/credits', authenticateToken, async (req, res) => {

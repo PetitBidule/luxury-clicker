@@ -7,6 +7,7 @@ import ClickButton from './components/ClickButton'
 import UpgradesPanel from './components/UpgradesPanel'
 import StatsPanel from './components/StatsPanel'
 import AudioManager, { useAudio } from './components/AudioManager'
+import Leaderboard from './components/Leaderboard'
 
 
 function AppContent() {
@@ -242,6 +243,7 @@ function AppContent() {
         <div className="right-panel">
           <UpgradesPanel upgrades={upgrades} money={money} onBuyUpgrade={buyUpgrade} />
           <StatsPanel stats={stats} />
+          <Leaderboard/>
         </div>
       </main>
     </div>

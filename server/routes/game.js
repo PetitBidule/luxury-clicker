@@ -50,8 +50,8 @@ router.get('/save', authenticateToken, async (req, res) => {
         money: save.money,
         moneyPerClick: save.money_per_click,
         moneyPerSecond: save.money_per_second,
-        upgrades: JSON.parse(save.upgrades),
-        stats: JSON.parse(save.stats)
+        upgrades: save.upgrades,
+        stats: save.stats
       }
     });
 
@@ -136,7 +136,7 @@ router.get('/leaderboard', async (req, res) => {
     const formattedLeaderboard = leaderboard.map(entry => ({
       username: entry.username,
       money: entry.money,
-      totalClicks: JSON.parse(entry.stats).totalClicks || 0
+      totalClicks: entry.stats.totalClicks || 0
     }));
 
     res.json({
