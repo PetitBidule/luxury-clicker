@@ -11,6 +11,7 @@ import Leaderboard from './components/Leaderboard'
 import LuxuryShop from './components/LuxuryShop'
 import SocialMessages from './components/SocialMessages'
 import UserProfile from './components/UserProfile'
+import Modal from './components/Modal'
 
 
 function AppContent() {
@@ -22,20 +23,54 @@ function AppContent() {
   const [money, setMoney] = useState(0)
   const [moneyPerClick, setMoneyPerClick] = useState(1)
   const [moneyPerSecond, setMoneyPerSecond] = useState(0)
-  const [userCredits, setUserCredits] = useState(0)
+  const [userCredits, setUserCredits] = useState(100000)
   const [currentView, setCurrentView] = useState('game') // 'game', 'leaderboard', 'shop', 'profile'
+  const [isChatOpen, setIsChatOpen] = useState(false) // État pour le chat refermable
   const [upgrades, setUpgrades] = useState({
     clickUpgrade: { level: 0, cost: 10, effect: 1, name: "Click Upgrade" },
     autoClicker: { level: 0, cost: 50, effect: 1, name: "Auto Clicker" },
     investment: { level: 0, cost: 200, effect: 5, name: "Investment" },
     business: { level: 0, cost: 1000, effect: 25, name: "Business" },
-    luxury: { level: 0, cost: 5000, effect: 100, name: "Luxury" }
+    luxury: { level: 0, cost: 5000, effect: 100, name: "Luxury" },
+    cryptocurrency: { level: 0, cost: 25000, effect: 500, name: "Cryptocurrency" },
+    realEstate: { level: 0, cost: 100000, effect: 2500, name: "Real Estate" },
+    stockMarket: { level: 0, cost: 500000, effect: 12500, name: "Stock Market" },
+    oilIndustry: { level: 0, cost: 2500000, effect: 62500, name: "Oil Industry" },
+    spaceMining: { level: 0, cost: 10000000, effect: 312500, name: "Space Mining" }
   })
   const [stats, setStats] = useState({
     totalClicks: 0,
     totalMoney: 0,
     playTime: 0
   })
+
+  // État pour les modales
+  const [modal, setModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info'
+  })
+
+  // Fonction pour afficher une modale
+  const showModal = (message, type = 'info', title = '') => {
+    setModal({
+      isOpen: true,
+      title,
+      message,
+      type
+    })
+  }
+
+  // Fonction pour fermer la modale
+  const closeModal = () => {
+    setModal({
+      isOpen: false,
+      title: '',
+      message: '',
+      type: 'info'
+    })
+  }
 
 
   const { playCashSound } = useAudio()
@@ -246,7 +281,12 @@ function AppContent() {
         autoClicker: { level: 0, cost: 50, effect: 1, name: "Auto Clicker" },
         investment: { level: 0, cost: 200, effect: 5, name: "Investment" },
         business: { level: 0, cost: 1000, effect: 25, name: "Business" },
-        luxury: { level: 0, cost: 5000, effect: 100, name: "Luxury" }
+        luxury: { level: 0, cost: 5000, effect: 100, name: "Luxury" },
+        cryptocurrency: { level: 0, cost: 25000, effect: 500, name: "Cryptocurrency" },
+        realEstate: { level: 0, cost: 100000, effect: 2500, name: "Real Estate" },
+        stockMarket: { level: 0, cost: 500000, effect: 12500, name: "Stock Market" },
+        oilIndustry: { level: 0, cost: 2500000, effect: 62500, name: "Oil Industry" },
+        spaceMining: { level: 0, cost: 10000000, effect: 312500, name: "Space Mining" }
       })
       setStats({
         totalClicks: 0,
@@ -264,48 +304,24 @@ function AppContent() {
   // Afficher le jeu si connecté
   return (
     <div className="App">
-      <GameHeader onReset={resetGame} onLogout={logout} username={user?.username} />
+      <GameHeader 
+        onReset={resetGame} 
+        onLogout={logout} 
+        username={user?.username}
+        currentView={currentView}
+        onViewChange={setCurrentView}
+      />
       
-      {/* Navigation pour les fonctionnalités sociales */}
-      <nav className="luxury-nav">
-        <button 
-          className={`nav-btn ${currentView === 'game' ? 'active' : ''}`}
-          onClick={() => setCurrentView('game')}
-        >
-          🎮 Jeu
-        </button>
-        <button 
-          className={`nav-btn ${currentView === 'leaderboard' ? 'active' : ''}`}
-          onClick={() => setCurrentView('leaderboard')}
-        >
-          🏆 Classement
-        </button>
-        <button 
-          className={`nav-btn ${currentView === 'shop' ? 'active' : ''}`}
-          onClick={() => setCurrentView('shop')}
-        >
-          🏪 Boutique
-        </button>
-        <button 
-          className={`nav-btn ${currentView === 'profile' ? 'active' : ''}`}
-          onClick={() => setCurrentView('profile')}
-        >
-          👑 Profil
-        </button>
-      </nav>
-
       <main className="game-container">
         {currentView === 'game' && (
           <>
             <div className="left-panel">
               <MoneyDisplay money={money} moneyPerSecond={moneyPerSecond} />
               <ClickButton onClick={handleClick} moneyPerClick={moneyPerClick} />
-              <SocialMessages token={token} />
             </div>
             
             <div className="right-panel">
               <UpgradesPanel upgrades={upgrades} money={money} onBuyUpgrade={buyUpgrade} />
-              <StatsPanel stats={stats} />
             </div>
           </>
         )}
@@ -328,10 +344,30 @@ function AppContent() {
 
         {currentView === 'profile' && (
           <div className="full-width-panel">
-            <UserProfile token={token} isOwnProfile={true} />
+            <UserProfile 
+              token={token} 
+              isOwnProfile={true} 
+              gameStats={stats}
+            />
           </div>
         )}
       </main>
+
+      {/* Chat refermable en panneau latéral */}
+      <SocialMessages 
+        token={token} 
+        isOpen={isChatOpen} 
+        onToggle={() => setIsChatOpen(!isChatOpen)} 
+      />
+
+      {/* Modale */}
+      <Modal 
+        isOpen={modal.isOpen} 
+        onClose={closeModal} 
+        title={modal.title} 
+        message={modal.message} 
+        type={modal.type} 
+      />
     </div>
   )
 }

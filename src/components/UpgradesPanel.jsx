@@ -15,15 +15,20 @@ const UpgradesPanel = ({ upgrades, money, onBuyUpgrade }) => {
       autoClicker: '🤖',
       investment: '📈',
       business: '🏢',
-      luxury: '💎'
+      luxury: '💎',
+      cryptocurrency: '₿',
+      realEstate: '🏠',
+      stockMarket: '📊',
+      oilIndustry: '🛢️',
+      spaceMining: '🚀'
     }
     return icons[upgradeKey] || '🔧'
   }
 
   return (
     <div className="upgrades-panel">
-      <h3>Upgrades</h3>
-      <div className="upgrades-list">
+      <h3>🚀 Upgrades</h3>
+      <div className="upgrades-grid">
         {Object.entries(upgrades).map(([key, upgrade]) => (
           <div key={key} className="upgrade-item">
             <div className="upgrade-info">

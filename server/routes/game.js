@@ -123,34 +123,40 @@ router.post('/save', authenticateToken, async (req, res) => {
 });
 
 // Obtenir les statistiques globales
-router.get('/leaderboard', async (req, res) => {
-  try {
-    const [leaderboard] = await pool.execute(`
-      SELECT u.username, gs.money, gs.stats
-      FROM game_saves gs
-      JOIN users u ON gs.user_id = u.id
-      ORDER BY gs.money DESC
-      LIMIT 10
-    `);
+// router.get('/leaderboard', async (req, res) => {
+//   try {
 
-    const formattedLeaderboard = leaderboard.map(entry => ({
-      username: entry.username,
-      money: entry.money,
-      totalClicks: entry.stats.totalClicks || 0
-    }));
+//     const [leaderboard] = await pool.execute(`
+//       SELECT u.username, gs.money, gs.stats
+//       FROM game_saves gs
+//       JOIN users u ON gs.user_id = u.id
+//       GROUP BY u.username
+//       ORDER BY gs.money DESC
+//       LIMIT 10
+//     `);
 
-    res.json({
-      success: true,
-      leaderboard: formattedLeaderboard
-    });
+//     console.log(leaderboard)  ;
+    
 
-  } catch (error) {
-    console.error('Erreur lors de la récupération du classement:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Erreur interne du serveur' 
-    });
-  }
-});
+//     const formattedLeaderboard = leaderboard.map(entry => ({
+//       username: entry.username,
+//       money: entry.money,
+//       totalClicks: entry.stats.totalClicks || 0
+//     }));
+
+//     res.json({
+//       success: true,
+//       leaderboard: formattedLeaderboard
+//     });
+
+
+//   } catch (error) {
+//     console.error('Erreur lors de la récupération du classement:', error);
+//     res.status(500).json({ 
+//       success: false, 
+//       message: 'Erreur interne du serveur' 
+//     });
+//   }
+// });
 
 export default router; 

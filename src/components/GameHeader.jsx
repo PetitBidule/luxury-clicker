@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAudio } from './AudioManager'
 
-const GameHeader = ({ onReset, onLogout, username }) => {
+const GameHeader = ({ onReset, onLogout, username, currentView, onViewChange }) => {
   const { isAudioEnabled, toggleAudio } = useAudio()
 
   return (
@@ -16,6 +16,35 @@ const GameHeader = ({ onReset, onLogout, username }) => {
           <p className="username-display">Welcome, {username}!</p>
         )}
       </div>
+      
+      {/* Navigation pour les fonctionnalités */}
+      <nav className="header-navigation">
+        <button 
+          className={`nav-btn ${currentView === 'game' ? 'active' : ''}`}
+          onClick={() => onViewChange('game')}
+        >
+          🎮 Jeu
+        </button>
+        <button 
+          className={`nav-btn ${currentView === 'leaderboard' ? 'active' : ''}`}
+          onClick={() => onViewChange('leaderboard')}
+        >
+          🏆 Classement
+        </button>
+        <button 
+          className={`nav-btn ${currentView === 'shop' ? 'active' : ''}`}
+          onClick={() => onViewChange('shop')}
+        >
+          🏪 Boutique
+        </button>
+        <button 
+          className={`nav-btn ${currentView === 'profile' ? 'active' : ''}`}
+          onClick={() => onViewChange('profile')}
+        >
+          👑 Profil
+        </button>
+      </nav>
+      
       <div className="header-controls">
         <button 
           className={`audio-button ${isAudioEnabled ? 'enabled' : 'disabled'}`} 

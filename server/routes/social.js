@@ -31,23 +31,12 @@ const authenticateToken = (req, res, next) => {
 router.get('/leaderboard', async (req, res) => {
   try {
     const [leaderboard] = await pool.execute(`
-      SELECT 
-        u.username,
-        up.custom_phrase,
-        up.current_title,
-        up.total_spent,
-        up.prestige_level,
-        gs.money,
-        JSON_EXTRACT(gs.stats, '$.totalClicks') as total_clicks,
-        ht.title_color,
-        ht.title_icon,
-        (SELECT COUNT(*) FROM user_badges ub WHERE ub.user_id = u.id) as badge_count
-      FROM users u
-      LEFT JOIN user_profiles up ON u.id = up.user_id
-      LEFT JOIN game_saves gs ON u.id = gs.user_id
-      LEFT JOIN honorific_titles ht ON up.current_title = ht.title_name
-      ORDER BY up.total_spent DESC, gs.money DESC
-      LIMIT 50
+      SELECT u.username, gs.money, gs.stats
+      FROM game_saves gs
+      JOIN users u ON gs.user_id = u.id
+      GROUP BY u.username
+      ORDER BY gs.money DESC
+      LIMIT 10
     `);
 
     const formattedLeaderboard = leaderboard.map((entry, index) => ({
@@ -160,7 +149,7 @@ router.get('/profile/:userId?', authenticateToken, async (req, res) => {
           isEquipped: item.is_equipped,
           purchasedAt: item.purchased_at,
           purchasePrice: parseFloat(item.purchase_price),
-          specialEffects: JSON.parse(item.special_effects || '{}')
+          specialEffects: item.special_effects || '{}'
         })),
         createdAt: userProfile.created_at,
         updatedAt: userProfile.updated_at
@@ -398,7 +387,7 @@ router.get('/shop', async (req, res) => {
       maxSupply: item.max_supply,
       currentSupply: item.current_supply,
       remainingSupply: item.remaining_supply,
-      specialEffects: JSON.parse(item.special_effects || '{}')
+      specialEffects: item.special_effects || '{}'
     }));
 
     res.json({

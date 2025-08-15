@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './UserProfile.css';
 
-function UserProfile({ token, userId, isOwnProfile = true }) {
+function UserProfile({ token, userId, isOwnProfile = true, gameStats = null }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -63,13 +63,14 @@ function UserProfile({ token, userId, isOwnProfile = true }) {
           profilePicture: editForm.profilePicture
         }));
         setEditing(false);
-        alert('Profil mis à jour avec succès !');
+        // Utiliser une modale au lieu d'alert
+        showModal('Profil mis à jour avec succès !', 'success');
       } else {
-        alert(`Erreur: ${data.message}`);
+        showModal(`Erreur: ${data.message}`, 'error');
       }
     } catch (error) {
       console.error('Erreur lors de la mise à jour:', error);
-      alert('Erreur lors de la mise à jour');
+      showModal('Erreur lors de la mise à jour', 'error');
     }
   };
 
@@ -78,6 +79,28 @@ function UserProfile({ token, userId, isOwnProfile = true }) {
     if (amount >= 1e6) return `${(amount / 1e6).toFixed(1)}M€`;
     if (amount >= 1e3) return `${(amount / 1e3).toFixed(1)}K€`;
     return `${amount}€`;
+  };
+
+  const formatNumber = (num) => {
+    if (num >= 1e12) return `${(num / 1e12).toFixed(1)}T`;
+    if (num >= 1e9) return `${(num / 1e9).toFixed(1)}B`;
+    if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
+    if (num >= 1e3) return `${(num / 1e3).toFixed(1)}K`;
+    return num.toLocaleString();
+  };
+
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${secs}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    } else {
+      return `${secs}s`;
+    }
   };
 
   const getRarityColor = (rarity) => {
@@ -89,6 +112,31 @@ function UserProfile({ token, userId, isOwnProfile = true }) {
       mythic: '#EF4444'
     };
     return colors[rarity] || '#9CA3AF';
+  };
+
+  const showModal = (message, type = 'info') => {
+    // Créer une modale simple pour remplacer les alerts
+    const modal = document.createElement('div');
+    modal.className = `custom-modal ${type}`;
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-message">${message}</div>
+        <button class="modal-close">OK</button>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.querySelector('.modal-close').onclick = () => {
+      document.body.removeChild(modal);
+    };
+    
+    // Auto-fermeture après 3 secondes
+    setTimeout(() => {
+      if (document.body.contains(modal)) {
+        document.body.removeChild(modal);
+      }
+    }, 3000);
   };
 
   useEffect(() => {
@@ -192,6 +240,38 @@ function UserProfile({ token, userId, isOwnProfile = true }) {
           </div>
         </div>
       </div>
+
+      {/* Statistiques du jeu intégrées */}
+      {gameStats && (
+        <div className="game-stats-section">
+          <h3>🎮 Statistiques de Jeu</h3>
+          <div className="game-stats-grid">
+            <div className="game-stat-card">
+              <div className="stat-icon">🖱️</div>
+              <div className="stat-info">
+                <div className="stat-value">{formatNumber(gameStats.totalClicks)}</div>
+                <div className="stat-label">Total Clics</div>
+              </div>
+            </div>
+            
+            <div className="game-stat-card">
+              <div className="stat-icon">💰</div>
+              <div className="stat-info">
+                <div className="stat-value">{formatMoney(gameStats.totalMoney)}</div>
+                <div className="stat-label">Argent Total Gagné</div>
+              </div>
+            </div>
+            
+            <div className="game-stat-card">
+              <div className="stat-icon">⏱️</div>
+              <div className="stat-info">
+                <div className="stat-value">{formatTime(gameStats.playTime)}</div>
+                <div className="stat-label">Temps de Jeu</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="profile-stats">
         <div className="stat-card main-stat">

@@ -1,0 +1,115 @@
+.message-composer {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 20, 147, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.message-composer h4 {
+  color: #FF1493;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.composer-input {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.composer-input textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: 1px solid rgba(255, 20, 147, 0.3);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 0.9rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.composer-input textarea:focus {
+  outline: none;
+  border-color: #FF1493;
+  box-shadow: 0 0 0 2px rgba(255, 20, 147, 0.2);
+}
+
+.composer-input textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.char-count {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.error-message {
+  background: rgba(255, 107, 107, 0.2);
+  color: #FF6B6B;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.composer-info {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.composer-info small {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+}
+
+.send-button {
+  width: 100%;
+  background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.send-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+}
+
+.send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .message-composer {
+    padding: 15px;
+    margin: 15px 0;
+  }
+  
+  .composer-input textarea {
+    min-height: 60px;
+    font-size: 0.85rem;
+  }
+  
+  .send-button {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+}

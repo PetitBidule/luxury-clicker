@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import './SocialMessages.css';
+import MessageComposer from './MessageComposer';
 
-function SocialMessages({ token }) {
+function SocialMessages({ token, isOpen, onToggle }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,6 +24,11 @@ function SocialMessages({ token }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleMessageSent = () => {
+    // Recharger les messages après envoi
+    fetchMessages();
   };
 
   const formatMoney = (amount) => {
@@ -51,10 +57,23 @@ function SocialMessages({ token }) {
     return () => clearInterval(interval);
   }, []);
 
+  if (!isOpen) {
+    return (
+      <div className="social-messages-toggle">
+        <button className="toggle-button" onClick={onToggle}>
+          💬
+        </button>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
-      <div className="social-messages">
-        <h3>💬 Messages en Direct</h3>
+      <div className="social-messages sidebar">
+        <div className="sidebar-header">
+          <h3>💬 Messages en Direct</h3>
+          <button className="close-button" onClick={onToggle}>✕</button>
+        </div>
         <div className="loading">Chargement des messages...</div>
       </div>
     );
@@ -62,22 +81,33 @@ function SocialMessages({ token }) {
 
   if (error) {
     return (
-      <div className="social-messages">
-        <h3>💬 Messages en Direct</h3>
+      <div className="social-messages sidebar">
+        <div className="sidebar-header">
+          <h3>💬 Messages en Direct</h3>
+          <button className="close-button" onClick={onToggle}>✕</button>
+        </div>
         <div className="error">{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="social-messages">
-      <div className="messages-header">
+    <div className="social-messages sidebar">
+      <div className="sidebar-header">
         <h3>💬 Messages en Direct</h3>
-        <div className="live-indicator">
-          <div className="pulse-dot"></div>
-          LIVE
-        </div>
+        <button className="close-button" onClick={onToggle}>✕</button>
       </div>
+
+      <div className="live-indicator">
+        <div className="pulse-dot"></div>
+        LIVE
+      </div>
+
+      {/* Composant pour écrire des messages */}
+      <MessageComposer 
+        token={token} 
+        onMessageSent={handleMessageSent}
+      />
 
       <div className="messages-list">
         {messages.length === 0 ? (
